@@ -1,0 +1,26 @@
+<?php
+
+// JSONRenderer.php: JSON レスポンス用の Renderer で、Web API エンドポイントや、クライアントサイドレンダリング（例：SPA）のためのクライアントでよく使用されます。
+
+namespace Response\Render;
+
+require_once("Response/HTTPRenderer.php");
+use Response\HTTPRenderer;
+
+class JSONRenderer implements HTTPRenderer {
+    private array $data;
+
+    public function __construct(array $data) {
+        $this->data = $data;
+    }
+
+    public function getFields(): array {
+        return [
+            'Content-Type' => 'application/json; charset=UTF-8',
+        ];
+    }
+
+    public function getContent(): string {
+        return json_encode($this->data, JSON_THROW_ON_ERROR);
+    }
+}
