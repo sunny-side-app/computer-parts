@@ -10,6 +10,8 @@ require_once("Response/Render/JSONRenderer.php");
 require_once __DIR__ . '/../Database/DataAccess/Implementations/ComputerPartDAOImpl.php';
 require_once __DIR__ . '/../Types/ValueType.php';
 require_once __DIR__ . '/../Models/ComputerPart.php';
+require_once __DIR__ . '/../Database/DataAccess/DAOFactory.php';
+
 
 use Helpers\DatabaseHelper;
 use Helpers\ValidationHelper;
@@ -19,6 +21,7 @@ use Response\Render\JSONRenderer;
 use Database\DataAccess\Implementations\ComputerPartDAOImpl;
 use Types\ValueType;
 use Models\ComputerPart;
+use Database\DataAccess\DAOFactory;
 
 return [
     // 'random/part'=>function(): HTTPRenderer{
@@ -26,8 +29,20 @@ return [
 
     //     return new HTMLRenderer('component/random-part', ['part'=>$part]);
     // },
+
+    // use DAO
+    // 'random/part'=>function(): HTTPRenderer{
+    //     $partDao = new ComputerPartDAOImpl();
+    //     $part = $partDao->getRandom();
+
+    //     if($part === null) throw new Exception('No parts are available!');
+
+    //     return new HTMLRenderer('component/computer-part-card', ['part'=>$part]);
+    // },
+
+    // use DAOFactory
     'random/part'=>function(): HTTPRenderer{
-        $partDao = new ComputerPartDAOImpl();
+        $partDao = DAOFactory::getComputerPartDAO();
         $part = $partDao->getRandom();
 
         if($part === null) throw new Exception('No parts are available!');
@@ -41,11 +56,25 @@ return [
     //     $part = DatabaseHelper::getComputerPartById($id);
     //     return new HTMLRenderer('component/parts', ['part'=>$part]);
     // },
+    // use DAO
+    // 'parts'=>function(): HTTPRenderer{
+    //     // IDの検証
+    //     $id = ValidationHelper::integer($_GET['id']??null);
+
+    //     $partDao = new ComputerPartDAOImpl();
+    //     $part = $partDao->getById($id);
+
+    //     if($part === null) throw new Exception('Specified part was not found!');
+
+    //     return new HTMLRenderer('component/computer-part-card', ['part'=>$part]);
+    // },
+
+    // use DAOFactory
     'parts'=>function(): HTTPRenderer{
         // IDの検証
         $id = ValidationHelper::integer($_GET['id']??null);
 
-        $partDao = new ComputerPartDAOImpl();
+        $partDao = DAOFactory::getComputerPartDAO();
         $part = $partDao->getById($id);
 
         if($part === null) throw new Exception('Specified part was not found!');
@@ -139,9 +168,74 @@ return [
             return new HTMLRenderer('errors/500', ['message' => $e->getMessage()]);
         }
     },
+    // use DAO
+    // 'update/part' => function(): HTMLRenderer {
+    //     $part = null;
+    //     $partDao = new ComputerPartDAOImpl();
+    //     if(isset($_GET['id'])){
+    //         $id = ValidationHelper::integer($_GET['id']);
+    //         $part = $partDao->getById($id);
+    //     }
+    //     return new HTMLRenderer('component/update-computer-part',['part'=>$part]);
+    // },
+    // use DAO
+    // 'form/update/part' => function(): HTTPRenderer {
+    //     try {
+    //         // リクエストメソッドがPOSTかどうかをチェックします
+    //         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    //             throw new Exception('Invalid request method!');
+    //         }
+
+    //         $required_fields = [
+    //             'name' => ValueType::STRING,
+    //             'type' => ValueType::STRING,
+    //             'brand' => ValueType::STRING,
+    //             'modelNumber' => ValueType::STRING,
+    //             'releaseDate' => ValueType::DATE,
+    //             'description' => ValueType::STRING,
+    //             'performanceScore' => ValueType::INT,
+    //             'marketPrice' => ValueType::FLOAT,
+    //             'rsm' => ValueType::FLOAT,
+    //             'powerConsumptionW' => ValueType::FLOAT,
+    //             'lengthM' => ValueType::FLOAT,
+    //             'widthM' => ValueType::FLOAT,
+    //             'heightM' => ValueType::FLOAT,
+    //             'lifespan' => ValueType::INT,
+    //         ];
+
+    //         $partDao = new ComputerPartDAOImpl();
+
+    //         // 入力に対する単純なバリデーション。実際のシナリオでは、要件を満たす完全なバリデーションが必要になることがあります。
+    //         $validatedData = ValidationHelper::validateFields($required_fields, $_POST);
+
+    //         if(isset($_POST['id'])) $validatedData['id'] = ValidationHelper::integer($_POST['id']);
+
+    //         // 名前付き引数を持つ新しいComputerPartオブジェクトの作成＋アンパッキング
+    //         $part = new ComputerPart(...$validatedData);
+
+    //         error_log(json_encode($part->toArray(), JSON_PRETTY_PRINT));
+
+    //         // 新しい部品情報でデータベースの更新を試みます。
+    //         // 別の方法として、createOrUpdateを実行することもできます。
+    //         if(isset($validatedData['id'])) $success = $partDao->update($part);
+    //         else $success = $partDao->create($part);
+
+    //         if (!$success) {
+    //             throw new Exception('Database update failed!');
+    //         }
+
+    //         return new JSONRenderer(['status' => 'success', 'message' => 'Part updated successfully']);
+    //     } catch (\InvalidArgumentException $e) {
+    //         error_log($e->getMessage()); // エラーログはPHPのログやstdoutから見ることができます。
+    //         return new JSONRenderer(['status' => 'error', 'message' => 'Invalid data.']);
+    //     } catch (Exception $e) {
+    //         error_log($e->getMessage());
+    //         return new JSONRenderer(['status' => 'error', 'message' => 'An error occurred.']);
+    //     }
+    // },
     'update/part' => function(): HTMLRenderer {
         $part = null;
-        $partDao = new ComputerPartDAOImpl();
+        $partDao = DAOFactory::getComputerPartDAO();
         if(isset($_GET['id'])){
             $id = ValidationHelper::integer($_GET['id']);
             $part = $partDao->getById($id);
@@ -172,14 +266,14 @@ return [
                 'lifespan' => ValueType::INT,
             ];
 
-            $partDao = new ComputerPartDAOImpl();
+            $partDao = DAOFactory::getComputerPartDAO();
 
-            // 入力に対する単純なバリデーション。実際のシナリオでは、要件を満たす完全なバリデーションが必要になることがあります。
+            // 入力に対する単純な認証です。実際のシナリオでは、要件を満たす完全な認証が必要になることがあります。
             $validatedData = ValidationHelper::validateFields($required_fields, $_POST);
 
             if(isset($_POST['id'])) $validatedData['id'] = ValidationHelper::integer($_POST['id']);
 
-            // 名前付き引数を持つ新しいComputerPartオブジェクトの作成＋アンパッキング
+            // 名前付き引数を持つ新しいComputerPartオブジェクトの作成＋スプレッド演算子を用いて、配列の要素を別々の変数や関数の引数として展開
             $part = new ComputerPart(...$validatedData);
 
             error_log(json_encode($part->toArray(), JSON_PRETTY_PRINT));
@@ -195,7 +289,8 @@ return [
 
             return new JSONRenderer(['status' => 'success', 'message' => 'Part updated successfully']);
         } catch (\InvalidArgumentException $e) {
-            error_log($e->getMessage()); // エラーログはPHPのログやstdoutから見ることができます。
+            // エラーログはPHPのログやstdoutから見ることができます。
+            error_log($e->getMessage());
             return new JSONRenderer(['status' => 'error', 'message' => 'Invalid data.']);
         } catch (Exception $e) {
             error_log($e->getMessage());
