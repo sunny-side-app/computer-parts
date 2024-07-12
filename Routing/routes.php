@@ -10,8 +10,11 @@ require_once("Response/Render/JSONRenderer.php");
 require_once __DIR__ . '/../Database/DataAccess/Implementations/ComputerPartDAOImpl.php';
 require_once __DIR__ . '/../Types/ValueType.php';
 require_once __DIR__ . '/../Models/ComputerPart.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../Database/DataAccess/DAOFactory.php';
 
+=======
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
 
 use Helpers\DatabaseHelper;
 use Helpers\ValidationHelper;
@@ -21,7 +24,10 @@ use Response\Render\JSONRenderer;
 use Database\DataAccess\Implementations\ComputerPartDAOImpl;
 use Types\ValueType;
 use Models\ComputerPart;
+<<<<<<< HEAD
 use Database\DataAccess\DAOFactory;
+=======
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
 
 return [
     // 'random/part'=>function(): HTTPRenderer{
@@ -29,6 +35,7 @@ return [
 
     //     return new HTMLRenderer('component/random-part', ['part'=>$part]);
     // },
+<<<<<<< HEAD
 
     // use DAO
     // 'random/part'=>function(): HTTPRenderer{
@@ -43,6 +50,10 @@ return [
     // use DAOFactory
     'random/part'=>function(): HTTPRenderer{
         $partDao = DAOFactory::getComputerPartDAO();
+=======
+    'random/part'=>function(): HTTPRenderer{
+        $partDao = new ComputerPartDAOImpl();
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
         $part = $partDao->getRandom();
 
         if($part === null) throw new Exception('No parts are available!');
@@ -56,6 +67,7 @@ return [
     //     $part = DatabaseHelper::getComputerPartById($id);
     //     return new HTMLRenderer('component/parts', ['part'=>$part]);
     // },
+<<<<<<< HEAD
     // use DAO
     // 'parts'=>function(): HTTPRenderer{
     //     // IDの検証
@@ -70,11 +82,17 @@ return [
     // },
 
     // use DAOFactory
+=======
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
     'parts'=>function(): HTTPRenderer{
         // IDの検証
         $id = ValidationHelper::integer($_GET['id']??null);
 
+<<<<<<< HEAD
         $partDao = DAOFactory::getComputerPartDAO();
+=======
+        $partDao = new ComputerPartDAOImpl();
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
         $part = $partDao->getById($id);
 
         if($part === null) throw new Exception('Specified part was not found!');
@@ -168,6 +186,7 @@ return [
             return new HTMLRenderer('errors/500', ['message' => $e->getMessage()]);
         }
     },
+<<<<<<< HEAD
     // use DAO
     // 'update/part' => function(): HTMLRenderer {
     //     $part = null;
@@ -236,6 +255,11 @@ return [
     'update/part' => function(): HTMLRenderer {
         $part = null;
         $partDao = DAOFactory::getComputerPartDAO();
+=======
+    'update/part' => function(): HTMLRenderer {
+        $part = null;
+        $partDao = new ComputerPartDAOImpl();
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
         if(isset($_GET['id'])){
             $id = ValidationHelper::integer($_GET['id']);
             $part = $partDao->getById($id);
@@ -266,14 +290,24 @@ return [
                 'lifespan' => ValueType::INT,
             ];
 
+<<<<<<< HEAD
             $partDao = DAOFactory::getComputerPartDAO();
 
             // 入力に対する単純な認証です。実際のシナリオでは、要件を満たす完全な認証が必要になることがあります。
+=======
+            $partDao = new ComputerPartDAOImpl();
+
+            // 入力に対する単純なバリデーション。実際のシナリオでは、要件を満たす完全なバリデーションが必要になることがあります。
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
             $validatedData = ValidationHelper::validateFields($required_fields, $_POST);
 
             if(isset($_POST['id'])) $validatedData['id'] = ValidationHelper::integer($_POST['id']);
 
+<<<<<<< HEAD
             // 名前付き引数を持つ新しいComputerPartオブジェクトの作成＋スプレッド演算子を用いて、配列の要素を別々の変数や関数の引数として展開
+=======
+            // 名前付き引数を持つ新しいComputerPartオブジェクトの作成＋アンパッキング
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
             $part = new ComputerPart(...$validatedData);
 
             error_log(json_encode($part->toArray(), JSON_PRETTY_PRINT));
@@ -289,8 +323,12 @@ return [
 
             return new JSONRenderer(['status' => 'success', 'message' => 'Part updated successfully']);
         } catch (\InvalidArgumentException $e) {
+<<<<<<< HEAD
             // エラーログはPHPのログやstdoutから見ることができます。
             error_log($e->getMessage());
+=======
+            error_log($e->getMessage()); // エラーログはPHPのログやstdoutから見ることができます。
+>>>>>>> fb12abccd85960aa297fecc82c2ae8747611a9b4
             return new JSONRenderer(['status' => 'error', 'message' => 'Invalid data.']);
         } catch (Exception $e) {
             error_log($e->getMessage());
