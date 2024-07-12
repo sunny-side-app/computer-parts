@@ -2,9 +2,14 @@
 // index はアプリケーションのエントリーポイント。初期設定を行った後、適切なルートコールバックを呼び出して Renderer を取得し、データをレンダリングして HTTP レスポンスとして返す作業を行う。
 spl_autoload_extensions(".php");
 spl_autoload_register();
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(__DIR__ . '/..'));
 
 $DEBUG = true;
-header("Access-Control-Allow-Origin: *");
+// header("Access-Control-Allow-Origin: *");
+
+if (preg_match('/\.(?:png|jpg|jpeg|gif|js|css|html)$/', $_SERVER["REQUEST_URI"])) {
+    return false;
+}
 
 // ルートを読み込みます。
 $routes = include('Routing/routes.php');
