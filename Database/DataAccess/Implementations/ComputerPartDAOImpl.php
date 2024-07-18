@@ -133,12 +133,16 @@ class ComputerPartDAOImpl implements ComputerPartDAO
         return true;
     }
 
+    public function convertResultsToComputerParts(array $results): array{
+        return $this->resultsToComputerParts($results);
+    }
+
     private function resultToComputerPart(array $data): ComputerPart{
         return new ComputerPart(
             name: $data['name'],
             type: $data['type'],
             brand: $data['brand'],
-            id: $data['id'],
+            id: $data['id'] ?? null,
             modelNumber: $data['model_number'],
             releaseDate: $data['release_date'],
             description: $data['description'],

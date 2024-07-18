@@ -4,4 +4,5 @@ return [
     Commands\Programs\CodeGeneration::class,
     // Commands\Programs\DBWipe::class,
     Commands\Programs\Seed::class,
+    Commands\Programs\SeedsDao::class,
 ];
