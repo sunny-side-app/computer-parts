@@ -4,7 +4,7 @@
 
 namespace Response\Render;
 
-require_once("Response/HTTPRenderer.php");
+require_once __DIR__ . '/../HTTPRenderer.php';
 use Response\HTTPRenderer;
 
 class JSONRenderer implements HTTPRenderer {

@@ -8,10 +8,12 @@ require_once __DIR__ . '/Interfaces/ComputerPartDAO.php';
 require_once __DIR__ . '/Implementations/ComputerPartDAOImpl.php';
 require_once __DIR__ . '/Implementations/ComputerPartDAOMemcachedImpl.php';
 require_once __DIR__ . '/../../Helpers/Settings.php';
+require_once __DIR__ . '/Implementations/UserDAOImpl.php';
 
 use Database\DataAccess\Implementations\ComputerPartDAOImpl;
 use Database\DataAccess\Implementations\ComputerPartDAOMemcachedImpl;
 use Database\DataAccess\Interfaces\ComputerPartDAO;
+use Database\DataAccess\Implementations\UserDAOImpl;
 use Helpers\Settings;
 
 class DAOFactory
@@ -23,6 +25,10 @@ class DAOFactory
             'memcached' => new ComputerPartDAOMemcachedImpl(),
             default => new ComputerPartDAOImpl(),
         };
+    }
+
+    public static function getUserDAO(): UserDAOImpl {
+        return UserDAOImpl::getUserDAO();
     }
 }
 

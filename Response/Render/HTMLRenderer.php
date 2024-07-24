@@ -4,7 +4,7 @@
 
 namespace Response\Render;
 
-require_once("Response/HTTPRenderer.php");
+require_once __DIR__ . '/../HTTPRenderer.php';
 use Response\HTTPRenderer;
 
 class HTMLRenderer implements HTTPRenderer
@@ -42,6 +42,8 @@ class HTMLRenderer implements HTTPRenderer
     private function getHeader(): string{
         ob_start();
         require $this->getViewPath('layout/header');
+        // 成功＆エラーフラッシュメッセージを表示
+        require $this->getViewPath('component/message-boxes');
         return ob_get_clean();
     }
 
