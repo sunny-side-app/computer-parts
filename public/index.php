@@ -1,5 +1,6 @@
 <?php
 // index はアプリケーションのエントリーポイント。初期設定を行った後、適切なルートコールバックを呼び出して Renderer を取得し、データをレンダリングして HTTP レスポンスとして返す作業を行う。
+session_start();
 spl_autoload_extensions(".php");
 spl_autoload_register();
 set_include_path(get_include_path() . PATH_SEPARATOR . realpath(__DIR__ . '/..'));
