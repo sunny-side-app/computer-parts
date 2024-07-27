@@ -42,6 +42,7 @@ class HTMLRenderer implements HTTPRenderer
     private function getHeader(): string{
         ob_start();
         require $this->getViewPath('layout/header');
+        require $this->getViewPath('component/navigator');
         // 成功＆エラーフラッシュメッセージを表示
         require $this->getViewPath('component/message-boxes');
         return ob_get_clean();
