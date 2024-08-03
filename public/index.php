@@ -1,6 +1,25 @@
 <?php
-// index はアプリケーションのエントリーポイント。初期設定を行った後、適切なルートコールバックを呼び出して Renderer を取得し、データをレンダリングして HTTP レスポンスとして返す作業を行う。
-session_start();
+
+require_once __DIR__ . '/../Middleware/AuthenticatedMiddleware.php';
+require_once __DIR__ . '/../Middleware/GuestMiddleware.php';
+require_once __DIR__ . '/../Middleware/MiddlewareA.php';
+require_once __DIR__ . '/../Middleware/MiddlewareB.php';
+require_once __DIR__ . '/../Middleware/MiddlewareC.php';
+require_once __DIR__ . '/../Middleware/MiddlewareHandler.php';
+require_once __DIR__ . '/../Middleware/SessionsSetupMiddleware.php';
+require_once __DIR__ . '/../Middleware/CSRFMiddleware.php';
+
+use \Middleware\AuthenticatedMiddleware;
+use \Middleware\GuestMiddleware;
+use \Middleware\MiddlewareA;
+use \Middleware\MiddlewareB;
+use \Middleware\MiddlewareC;
+use \Middleware\MiddlewareHandler;
+use \Middleware\SessionsSetupMiddleware;
+use \Middleware\CSRFMiddleware;
+
+// index はアプリケーションのエントリーポイント。初期設定を行った後、適切なルートコールバックを呼び出して Renderer を取得し、データをレンダリングして HTTP レスポンスとして返す作業を行う。ミドルウェアを使用するように更新済み。チェーン内の最後の呼び出し可能なものがルート呼び出し可能関数そのものであることに注目。
+// session_start();
 spl_autoload_extensions(".php");
 spl_autoload_register();
 set_include_path(get_include_path() . PATH_SEPARATOR . realpath(__DIR__ . '/..'));
@@ -21,10 +40,26 @@ $path = ltrim($path, '/');
 
 // ルートにパスが存在するかチェックする
 if (isset($routes[$path])) {
-    // コールバックを呼び出してrendererを作成します。
-    $renderer = $routes[$path]();
+    // ルートの取得
+    $route = $routes[$path];
 
     try{
+    
+        if(!($route instanceof Routing\Route)) throw new InvalidArgumentException("Invalid route type");
+
+        // 配列連結ミドルウェア
+        $middlewareRegister = include('Middleware/middleware-register.php');
+        // $middlewares = $middlewareRegister['global'];
+        // $middlewareHandler = new \Middleware\MiddlewareHandler($middlewares);
+        $middlewares = array_merge($middlewareRegister['global'], array_map(fn ($routeAlias) => $middlewareRegister['aliases'][$routeAlias], $route->getMiddleware()));
+
+        $middlewareHandler = new \Middleware\MiddlewareHandler(array_map(fn($middlewareClass) => new $middlewareClass(), $middlewares));
+
+        // // コールバックを呼び出してrendererを作成します。
+        // $renderer = $routes[$path]();
+        // チェーンの最後のcallableは、HTTPRendererを返す現在の$route callableとなります。
+        $renderer = $middlewareHandler->run($route->getCallback());
+
         // ヘッダーを設定します。Ex) renderer: HTMLRenderer
         foreach ($renderer->getFields() as $name => $value) {
             // ヘッダーに対する単純な検証を実行します。

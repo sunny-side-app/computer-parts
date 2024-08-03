@@ -20,8 +20,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.status === 'success') {
                     // 成功メッセージを表示したり、リダイレクトしたり、コンソールにログを出力する可能性があります
                     console.log(data.message);
-                    alert('Update successful!');
-                    if (!formData.has('id')) form.reset();
+                    // alert('Update successful!');
+                    // if (!formData.has('id')) form.reset();
+                    if (!formData.has('id')){
+                        alert('Part created successful!');
+                        if(data.id === undefined) form.reset();
+                        else window.location = '/parts?id='+data.id;
+                    }
+                    else alert('Part created successful!');
+
                 } else if (data.status === 'error') {
                     // ユーザーにエラーメッセージを表示します
                     console.error(data.message);

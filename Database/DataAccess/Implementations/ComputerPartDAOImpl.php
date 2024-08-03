@@ -76,12 +76,13 @@ class ComputerPartDAOImpl implements ComputerPartDAO
     public function createOrUpdate(ComputerPart $partData): bool
     {
         $mysqli = DatabaseManager::getMysqliConnection();
-
+        // SQL ?:15, SQL row number: 15 
+        // ON DUPLICATE KEY UPDATE句は、主に重複キーエラーが発生したときに実行されるため、この部分の行数が問題になることはありません。この部分では、重複が発生した場合に更新される列とその値を指定しています。ON DUPLICATE KEY UPDATE句の部分は、INSERT文がデータベースに存在する場合に使用されるため、バインドされる変数の数($resultの行数)とは直接関係ありません。VALUES句の部分(?の数)が正しくバインドされる変数の数（16個）と一致している場合、ON DUPLICATE KEY UPDATE句の行数が16であるかどうかは問題ありません。
         $query =
         <<<SQL
-            INSERT INTO computer_parts (id, name, type, brand, model_number, release_date, description, performance_score, market_price, rsm, power_consumptionw, lengthm, widthm, heightm, lifespan)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE id = ?,
+            INSERT INTO computer_parts (id, name, type, brand, model_number, release_date, description, performance_score, market_price, rsm, power_consumptionw, lengthm, widthm, heightm, lifespan, submitted_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
             name = VALUES(name),
             type = VALUES(type),
             brand = VALUES(brand),
@@ -95,9 +96,10 @@ class ComputerPartDAOImpl implements ComputerPartDAO
             lengthm = VALUES(lengthm),
             widthm = VALUES(widthm),
             heightm = VALUES(heightm),
-            lifespan = VALUES(lifespan);
+            lifespan = VALUES(lifespan),
+            submitted_by = VALUES(submitted_by);
         SQL;
-
+        // i,s,d:16, paramater number: 16
         $result = $mysqli->prepareAndExecute(
             $query,
             'issssssidddddddi',
@@ -117,7 +119,8 @@ class ComputerPartDAOImpl implements ComputerPartDAO
                 $partData->getWidthM(),
                 $partData->getHeightM(),
                 $partData->getLifespan(),
-                $partData->getId()
+                $partData->getSubmittedById()
+                // $partData->getId()
             ],
         );
 
@@ -154,7 +157,8 @@ class ComputerPartDAOImpl implements ComputerPartDAO
             widthM: $data['widthm'],
             heightM: $data['heightm'],
             lifespan: $data['lifespan'],
-            timeStamp: new DataTimeStamp($data['created_at'], $data['updated_at'])
+            timeStamp: new DataTimeStamp($data['created_at'], $data['updated_at']),
+            submitted_by_id: $data['submitted_by'],
         );
     }
 

@@ -5,7 +5,10 @@
 namespace Response\Render;
 
 require_once __DIR__ . '/../HTTPRenderer.php';
+require_once __DIR__ . '/../../Helpers/Authenticate.php';
+
 use Response\HTTPRenderer;
+use Helpers\Authenticate;
 
 class HTMLRenderer implements HTTPRenderer
 {
@@ -41,6 +44,8 @@ class HTMLRenderer implements HTTPRenderer
 
     private function getHeader(): string{
         ob_start();
+        // ユーザーへのアクセスを提供します
+        $user = Authenticate::getAuthenticatedUser();
         require $this->getViewPath('layout/header');
         require $this->getViewPath('component/navigator');
         // 成功＆エラーフラッシュメッセージを表示

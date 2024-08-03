@@ -6,8 +6,10 @@ namespace Database;
 // データベース接続を管理するための構造です。静的変数、クラス変数を使用して状態を管理します。その主な使用目的は、HTTP リクエストごとに単一の接続を保持することです。リクエストライフサイクルが終了すると、mysqli は自動的にその接続を閉じるため、リクエスト中に複数の mysqli 接続を作成して閉じる予定がない限り、close 関数を実行する必要はありません。
 
 require_once __DIR__ . '/../Helpers/Settings.php';
+require_once __DIR__ . '/MySQLWrapper.php';
 
 use Helpers\Settings;
+use Database\MySQLWrapper;
 use Memcached;
 
 class DatabaseManager

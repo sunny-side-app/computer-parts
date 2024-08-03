@@ -3,6 +3,7 @@
         <?php if ($part?->getId() !== null): ?>
             <input type="hidden" name="id" value="<?= $part->getId() ?>" placeholder="ID"><br>
         <?php endif; ?>
+        <input type="hidden" name="csrf_token" value="<?= Helpers\CrossSiteForgeryProtection::getToken() ?>">
         <input type="text" name="name" value="<?= $part? htmlspecialchars($part->getName()) : '' ?>" placeholder="Name" required><br>
         <input type="text" name="type" value="<?= $part? htmlspecialchars($part->getType()) : '' ?>" placeholder="Type" required><br>
         <input type="text" name="brand" value="<?= $part? htmlspecialchars($part->getBrand()) : '' ?>" placeholder="Brand" required><br>
