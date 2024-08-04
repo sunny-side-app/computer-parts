@@ -18,6 +18,7 @@ require_once __DIR__ . '/../Database/DataAccess/DAOFactory.php';
 require_once __DIR__ . '/../Response/FlashData.php';
 require_once __DIR__ . '/../Response/Render/RedirectRenderer.php';
 require_once __DIR__ . '/../Routing/Route.php';
+require_once __DIR__ . '/../Response/Render/MediaRenderer.php';
 
 use Exceptions\AuthenticationFailureException;
 use Helpers\Authenticate;
@@ -35,6 +36,7 @@ use Models\User;
 use Database\DataAccess\DAOFactory;
 use Response\Render\RedirectRenderer;
 use Routing\Route;
+use Response\Render\MediaRenderer;
 
 // AuthenticatedMiddleware を使用するルート: logout, update/part, form/update/part
 // GuestMiddleware を使用するルート: login, form/login, register, form/register
@@ -246,6 +248,31 @@ return [
             return new JSONRenderer(['status' => 'error', 'message' => 'An error occurred.']);
         }
     })->setMiddleware(['auth']),
+    'test/share/files/jpeg'=> Route::create('test/share/files/jpeg', function(): HTTPRenderer{
+        // このURLは署名を必要とするため、URLが正しい署名を持つ場合にのみ、この最終ルートコードに到達します。
+        $required_fields = [
+            'user' => ValueType::STRING,
+            'filename' => ValueType::STRING, // 本番環境では、有効なファイルパスに対してバリデーションを行いますが、ファイルパスの単純な文字列チェックを行います。
+        ];
+
+        $validatedData = ValidationHelper::validateFields($required_fields, $_GET);
+
+        return new MediaRenderer(sprintf("private/shared/%s/%s", $validatedData['user'],$validatedData['filename']), 'jpeg');
+    })->setMiddleware(['signature']),
+    'test/share/files/jpeg/generate-url'=> Route::create('test/share/files/jpeg/generate-url', function(): HTTPRenderer{
+        $required_fields = [
+            'user' => ValueType::STRING,
+            'filename' => ValueType::STRING, // 本番環境では、有効なファイルパスに対してバリデーションを行いますが、ファイルパスの単純な文字列チェックを行います。
+        ];
+
+        $validatedData = ValidationHelper::validateFields($required_fields, $_GET);
+
+        if(isset($_GET['lasts'])){
+            $validatedData['expiration'] = time() + ValidationHelper::integer($_GET['lasts']);
+        }
+
+        return new JSONRenderer(['url'=>Route::create('test/share/files/jpeg', function(){})->getSignedURL($validatedData)]);
+    }),
 ];
 
 // return [

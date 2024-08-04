@@ -21,6 +21,7 @@ class JSONRenderer implements HTTPRenderer {
     }
 
     public function getContent(): string {
-        return json_encode($this->data, JSON_THROW_ON_ERROR);
+        // return json_encode($this->data, JSON_THROW_ON_ERROR);
+        return json_encode($this->data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
     }
 }

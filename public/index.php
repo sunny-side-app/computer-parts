@@ -8,6 +8,7 @@ require_once __DIR__ . '/../Middleware/MiddlewareC.php';
 require_once __DIR__ . '/../Middleware/MiddlewareHandler.php';
 require_once __DIR__ . '/../Middleware/SessionsSetupMiddleware.php';
 require_once __DIR__ . '/../Middleware/CSRFMiddleware.php';
+require_once __DIR__ . '/../Middleware/SignatureValidationMiddleware.php';
 
 use \Middleware\AuthenticatedMiddleware;
 use \Middleware\GuestMiddleware;
@@ -17,6 +18,7 @@ use \Middleware\MiddlewareC;
 use \Middleware\MiddlewareHandler;
 use \Middleware\SessionsSetupMiddleware;
 use \Middleware\CSRFMiddleware;
+use \Middleware\SignatureValidationMiddleware;
 
 // index はアプリケーションのエントリーポイント。初期設定を行った後、適切なルートコールバックを呼び出して Renderer を取得し、データをレンダリングして HTTP レスポンスとして返す作業を行う。ミドルウェアを使用するように更新済み。チェーン内の最後の呼び出し可能なものがルート呼び出し可能関数そのものであることに注目。
 // session_start();
